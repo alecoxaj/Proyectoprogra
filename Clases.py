@@ -17,7 +17,7 @@ class Usuario:
                         }
             print("Se importaron usuarios de usuarios.txt")
         except FileNotFoundError:
-            print("No existe este archivo")  #cambiar por tkinter
+            print("No existe este archivo")#cambiar por tkinter
 
     def GuardarUsuarios(self):
         with open("usuarios.txt", "w", encoding="utf=8") as archivo:
