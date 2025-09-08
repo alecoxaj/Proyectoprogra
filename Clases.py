@@ -1,16 +1,22 @@
 class Usuario:
     def __init__(self, nombre):
         self.nombre = nombre
-        self.usuarios = {}
+        super().__init__()
 
-    def CargarUsuarios(self):
+class Estudiante(Usuario):
+    def __init__(self, nombre, cursos):
+        super().__init__(nombre)
+        self.cursos = cursos
+        self.estudiantes = {}
+
+    def CargarEstudiantes(self):
         try:
             with open("usuarios.txt", "r", encoding="utf-8") as archivo:
                 for liena in archivo:
                     linea = linea.strip()
                     if linea:
                         cui, nombre, rol = linea.split(":")
-                        self.usuarios[cui] = {
+                        self.estudiantes[cui] = {
                             'cui': cui,
                             'nombre': nombre,
                             'rol': rol
@@ -19,7 +25,16 @@ class Usuario:
         except FileNotFoundError:
             print("No existe este archivo")#cambiar por tkinter
 
-    def GuardarUsuarios(self):
+    def GuardarEstudiantes(self):
         with open("usuarios.txt", "w", encoding="utf=8") as archivo:
-            for cui, datos in self.usuarios.items():
+            for cui, datos in self.estudiantes.items():
                 archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}")
+
+    def AgregarEstudiantes(self, cui, nombre, rol):
+        self.estudiantes[cui] = {
+            'cui': cui,
+            'nombre': nombre,
+            'rol': rol,
+        }
+        self.GuardarEstudiantes()
+        print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
