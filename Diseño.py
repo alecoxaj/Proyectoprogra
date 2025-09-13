@@ -1,8 +1,6 @@
 class Usuario:
     def __init__(self, nombre):
         self.nombre = nombre
-        super().__init__()
-
 class Estudiante(Usuario):
     def __init__(self, nombre, cursos):
         super().__init__(nombre)
@@ -21,7 +19,7 @@ class Estudiante(Usuario):
     def CargarEstudiantes(self):
         try:
             with open("usuarios.txt", "r", encoding="utf-8") as archivo:
-                for liena in archivo:
+                for linea in archivo:
                     linea = linea.strip()
                     if linea:
                         cui, nombre, rol = linea.split(":")
@@ -37,13 +35,13 @@ class Estudiante(Usuario):
     def GuardarEstudiantes(self):
         with open("usuarios.txt", "w", encoding="utf=8") as archivo:
             for cui, datos in self.estudiantes.items():
-                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}")
+                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}\n")
 
-    def AgregarEstudiantes(self, cui, nombre, rol):
+    def AgregarEstudiantes(self, cui, nombre):
         self.estudiantes[cui] = {
             'cui': cui,
             'nombre': nombre,
-            'rol': rol,
+            'rol': "Estudiante",
         }
         self.GuardarEstudiantes()
         print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
@@ -66,7 +64,7 @@ class Instructor(Usuario):
     def CargarInstructores(self):
         try:
             with open("usuarios.txt", "r", encoding="utf-8") as archivo:
-                for liena in archivo:
+                for linea in archivo:
                     linea = linea.strip()
                     if linea:
                         cui, nombre, rol = linea.split(":")
@@ -77,24 +75,64 @@ class Instructor(Usuario):
                         }
             print("Se importaron usuarios de usuarios.txt")
         except FileNotFoundError:
-            print("No existe este archivo")#cambiar por tkinter
+            print("No existe este archivo")
 
     def GuardarInstructores(self):
         with open("usuarios.txt", "w", encoding="utf=8") as archivo:
             for cui, datos in self.instructores.items():
-                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}")
+                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}\n")
 
-    def AgregarInstructores(self, cui, nombre, rol):
+    def AgregarInstructores(self, cui, nombre):
         self.instructores[cui] = {
             'cui': cui,
             'nombre': nombre,
-            'rol': rol,
+            'rol': "Instructor",
         }
         self.GuardarInstructores()
         print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
 
-    def crear_curso(nombre_curso, *estudiantes, **kwargs):
-        curso = {"nombre": nombre_curso, "estudiantes": [], "instructor": kwargs.get("instructor")}
-        for est in estudiantes:
-            curso["estudiantes"].append(est.nombre)
-        return curso
+def crear_curso(nombre_curso, *estudiantes, **kwargs):
+    curso = {"nombre": nombre_curso, "estudiantes": [], "instructor": kwargs.get("instructor")}
+    for est in estudiantes:
+        curso["estudiantes"].append(est.nombre)
+    return curso
+
+if __name__ == "__main__":
+    open("usuarios.txt", "w", encoding="utf-8").close()
+
+    e1 = Estudiante("Alex", [])
+    e2 = Estudiante("Junior", ["Cálculo"])
+    i1 = Instructor("Ing. Jorge", [])
+
+    e1.AgregarEstudiantes("123", "Alejandro")
+    e2.AgregarEstudiantes("456", "José")
+    i1.AgregarInstructores("789", "Ing. Jorge Tello")
+
+    print("\n--- Contenido del archivo usuarios.txt ---")
+    with open("usuarios.txt", "r", encoding="utf-8") as f:
+        print(f.read())
+
+    # Cargar desde archivo
+    e_temp = Estudiante("temp", [])
+    e_temp.CargarEstudiantes()
+    print("Diccionario estudiantes:", e_temp.estudiantes)
+
+    i_temp = Instructor("temp", [])
+    i_temp.CargarInstructores()
+    print("Diccionario instructores:", i_temp.instructores)
+
+
+    try:
+        print(e1.inscribir_curso("Programación Avanzada"))
+        print(e1.inscribir_curso("Programación Avanzada"))  # duplicado
+    except ValueError as e:
+        print(f"Error: {e}")
+
+    try:
+        print(i1.asignar_curso("Bases de Datos"))
+        print(i1.asignar_curso("Bases de Datos"))
+    except ValueError as e:
+        print(f"Error: {e}")
+
+    curso1 = crear_curso("POO", e1, e2, instructor=i1.nombre)
+    print("Curso creado:", curso1)
