@@ -54,6 +54,9 @@ class Instructor(Usuario):
         self.cursos = cursos
         self.instructores = {}
 
+    def mostrar_info(self):
+        return f"Instructor: {self.nombre}, Cursos asignados: {self.cursos}\n"
+
 
     def CargarInstructores(self):
         try:
