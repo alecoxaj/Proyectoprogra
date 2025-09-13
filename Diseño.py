@@ -12,7 +12,11 @@ class Estudiante(Usuario):
     def mostrar_info(self):
         return f"Nombre: {self.nombre}, Cursos Inscritos: {self.cursos}\n"
 
-
+    def inscribir_curso(self, curso):
+        if curso in self.cursos:
+            raise ValueError(f"El estudiante {self.nombre} ya esta inscrito en {curso}.")
+        self.cursos.append(curso)
+        return f"Estudiante: {self.nombre} inscrito en {curso}-"
 
     def CargarEstudiantes(self):
         try:
