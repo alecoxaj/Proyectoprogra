@@ -92,3 +92,9 @@ class Instructor(Usuario):
         }
         self.GuardarInstructores()
         print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
+
+    def crear_curso(nombre_curso, *estudiantes, **kwargs):
+        curso = {"nombre": nombre_curso, "estudiantes": [], "instructor": kwargs.get("instructor")}
+        for est in estudiantes:
+            curso["estudiantes"].append(est.nombre)
+        return curso
