@@ -57,6 +57,11 @@ class Instructor(Usuario):
     def mostrar_info(self):
         return f"Instructor: {self.nombre}, Cursos asignados: {self.cursos}\n"
 
+    def asignar_curso(self, curso):
+        if curso in self.cursos:
+            raise ValueError(f"El curso {curso} ya está asignado al instructor {self.nombre}.")
+        self.cursos.append(curso)
+        return f"{self.nombre} ahora imparte {curso}"
 
     def CargarInstructores(self):
         try:
