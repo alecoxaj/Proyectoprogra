@@ -1,6 +1,7 @@
 class Usuario:
     def __init__(self, nombre):
         self.nombre = nombre
+
 class Estudiante(Usuario):
     def __init__(self, nombre, cursos):
         super().__init__(nombre)
@@ -12,9 +13,9 @@ class Estudiante(Usuario):
 
     def inscribir_curso(self, curso):
         if curso in self.cursos:
-            raise ValueError(f"El estudiante {self.nombre} ya esta inscrito en {curso}.")
+            raise ValueError(f"El estudiante {self.nombre} ya está inscrito en {curso}.")
         self.cursos.append(curso)
-        return f"Estudiante: {self.nombre} inscrito en {curso}-"
+        return f"Estudiante {self.nombre} inscrito en {curso}"
 
     def CargarEstudiantes(self):
         try:
@@ -23,28 +24,30 @@ class Estudiante(Usuario):
                     linea = linea.strip()
                     if linea:
                         cui, nombre, rol = linea.split(":")
-                        self.estudiantes[cui] = {
-                            'cui': cui,
-                            'nombre': nombre,
-                            'rol': rol
-                        }
-            print("Se importaron usuarios de usuarios.txt")
+                        if rol == "Estudiante":
+                            self.estudiantes[cui] = {
+                                "cui": cui,
+                                "nombre": nombre,
+                                "rol": rol
+                            }
+            print("Se importaron estudiantes de usuarios.txt")
         except FileNotFoundError:
-            print("No existe este archivo")#cambiar por tkinter
+            print("No existe este archivo")
 
     def GuardarEstudiantes(self):
-        with open("usuarios.txt", "w", encoding="utf=8") as archivo:
+        with open("usuarios.txt", "a", encoding="utf-8") as archivo:
             for cui, datos in self.estudiantes.items():
                 archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}\n")
 
     def AgregarEstudiantes(self, cui, nombre):
         self.estudiantes[cui] = {
-            'cui': cui,
-            'nombre': nombre,
-            'rol': "Estudiante",
+            "cui": cui,
+            "nombre": nombre,
+            "rol": "Estudiante",
         }
         self.GuardarEstudiantes()
-        print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
+        print(f"Estudiante con CUI {cui} agregado y guardado correctamente.")
+
 
 class Instructor(Usuario):
     def __init__(self, nombre, cursos):
@@ -68,28 +71,30 @@ class Instructor(Usuario):
                     linea = linea.strip()
                     if linea:
                         cui, nombre, rol = linea.split(":")
-                        self.instructores[cui] = {
-                            'cui': cui,
-                            'nombre': nombre,
-                            'rol': rol
-                        }
-            print("Se importaron usuarios de usuarios.txt")
+                        if rol == "Instructor":
+                            self.instructores[cui] = {
+                                "cui": cui,
+                                "nombre": nombre,
+                                "rol": rol
+                            }
+            print("Se importaron instructores de usuarios.txt")
         except FileNotFoundError:
             print("No existe este archivo")
 
     def GuardarInstructores(self):
-        with open("usuarios.txt", "w", encoding="utf=8") as archivo:
+        with open("usuarios.txt", "a", encoding="utf-8") as archivo:
             for cui, datos in self.instructores.items():
                 archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}\n")
 
     def AgregarInstructores(self, cui, nombre):
         self.instructores[cui] = {
-            'cui': cui,
-            'nombre': nombre,
-            'rol': "Instructor",
+            "cui": cui,
+            "nombre": nombre,
+            "rol": "Instructor",
         }
         self.GuardarInstructores()
-        print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
+        print(f"Instructor con CUI {cui} agregado y guardado correctamente.")
+
 
 def crear_curso(nombre_curso, *estudiantes, **kwargs):
     curso = {"nombre": nombre_curso, "estudiantes": [], "instructor": kwargs.get("instructor")}
@@ -97,12 +102,15 @@ def crear_curso(nombre_curso, *estudiantes, **kwargs):
         curso["estudiantes"].append(est.nombre)
     return curso
 
+
+
 if __name__ == "__main__":
     open("usuarios.txt", "w", encoding="utf-8").close()
 
-    e1 = Estudiante("Alex", [])
-    e2 = Estudiante("Junior", ["Cálculo"])
-    i1 = Instructor("Ing. Jorge", [])
+    e1 = Estudiante("Alejandro", [])
+    e2 = Estudiante("José", ["Cálculo"])
+    i1 = Instructor("Ing. Jorge Tello", [])
+
 
     e1.AgregarEstudiantes("123", "Alejandro")
     e2.AgregarEstudiantes("456", "José")
@@ -112,7 +120,6 @@ if __name__ == "__main__":
     with open("usuarios.txt", "r", encoding="utf-8") as f:
         print(f.read())
 
-    # Cargar desde archivo
     e_temp = Estudiante("temp", [])
     e_temp.CargarEstudiantes()
     print("Diccionario estudiantes:", e_temp.estudiantes)
@@ -121,10 +128,9 @@ if __name__ == "__main__":
     i_temp.CargarInstructores()
     print("Diccionario instructores:", i_temp.instructores)
 
-
     try:
         print(e1.inscribir_curso("Programación Avanzada"))
-        print(e1.inscribir_curso("Programación Avanzada"))  # duplicado
+        print(e1.inscribir_curso("Programación Avanzada"))
     except ValueError as e:
         print(f"Error: {e}")
 
@@ -133,6 +139,7 @@ if __name__ == "__main__":
         print(i1.asignar_curso("Bases de Datos"))
     except ValueError as e:
         print(f"Error: {e}")
+
 
     curso1 = crear_curso("POO", e1, e2, instructor=i1.nombre)
     print("Curso creado:", curso1)
