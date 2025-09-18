@@ -11,13 +11,21 @@ class Curso:
         self.instructor_cui = instructor_cui
 
 class Usuario:
-    def __init__(self, nombre):
+    def __init__(self, nombre, *args, **kwargs):
         self.nombre = nombre
+        self.extra = kwargs
+
+    def descripcion(self):
+        return f"Usuario {self.nombre}."
 
 class Estudiante(Usuario):
-    def __init__(self, nombre):
-        super().__init__(nombre)
+    def __init__(self, nombre, *args, **kwargs):
+        super().__init__(nombre, *args, **kwargs)
 
+    def descripcion(self):
+        return f"Estudiante {self.nombre} (extras: {self.extra})"
+
+    def
     def inscribir_curso(self, curso_nombre):
         if self.cui not in calificaciones:
             calificaciones[self.cui] = {}
@@ -32,11 +40,15 @@ class Instructor(Usuario):
         super().__init__(nombre)
         self.cursos = []
 
+    def descripcion(self):
+        return f"Instructor {self.nombre} (extras: {self.extra})"
+
     def asignar_curso(self, curso_nombre):
         if curso_nombre in self.cursos:
             raise ValueError(f"El curso {curso_nombre} ya está asignado al instructor {self.nombre}.")
         self.cursos.append(curso_nombre)
         return f"{self.nombre} ahora imparte {curso_nombre}"
+
 
 def crear_instructor(cui, nombre):
     if cui in instructores:
