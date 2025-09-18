@@ -1,121 +1,222 @@
 estudiantes = {}
 instructores = {}
 cursos = []
+curso_instructor = {}
+evaluaciones = {}
+calificaciones = {}
 
 class Curso:
-    def __init__(self, curso, instructor):
-        self.curso = curso
-        self.instructor = instructor
-
-    def agregar_curso(self):
-        cursos.append(self.curso)
+    def __init__(self, nombre, instructor_cui):
+        self.nombre = nombre
+        self.instructor_cui = instructor_cui
 
 class Usuario:
     def __init__(self, nombre):
         self.nombre = nombre
 
 class Estudiante(Usuario):
-    def __init__(self, nombre, cursos):
+    def __init__(self, nombre):
         super().__init__(nombre)
-        self.cursos = cursos
 
-    def inscribir_curso(self, curso):
-        if curso in self.cursos:
-            raise ValueError(f"El estudiante {self.nombre} ya está inscrito en {curso}.")
-        self.cursos.append(curso)
-        return f"Estudiante {self.nombre} inscrito en {curso}"
+    def inscribir_curso(self, curso_nombre):
+        if self.cui not in calificaciones:
+            calificaciones[self.cui] = {}
+        if curso_nombre not in calificaciones[self.cui]:
+            calificaciones[self.cui][curso_nombre] = {}
+            return f"Estudiante {self.nombre} inscrito en {curso_nombre}"
+        else:
+            raise ValueError(f"El estudiante {self.nombre} ya está inscrito en {curso_nombre}.")
 
 class Instructor(Usuario):
-    def __init__(self, nombre, cursos):
+    def __init__(self, nombre):
         super().__init__(nombre)
-        self.cursos = cursos
+        self.cursos = []
 
-    def asignar_curso(self, curso):
-        if curso in self.cursos:
-            raise ValueError(f"El curso {curso} ya está asignado al instructor {self.nombre}.")
-        self.cursos.append(curso)
-        return f"{self.nombre} ahora imparte {curso}"
+    def asignar_curso(self, curso_nombre):
+        if curso_nombre in self.cursos:
+            raise ValueError(f"El curso {curso_nombre} ya está asignado al instructor {self.nombre}.")
+        self.cursos.append(curso_nombre)
+        return f"{self.nombre} ahora imparte {curso_nombre}"
+
+def crear_instructor(cui, nombre):
+    if cui in instructores:
+        raise ValueError("CUI de instructor ya existe.")
+    inst = Instructor(nombre.lower())
+    inst.cui = cui
+    instructores[cui] = inst
+    return inst
+
+def crear_estudiante(cui, nombre):
+    if cui in estudiantes:
+        raise ValueError("CUI de estudiante ya existe.")
+    est = Estudiante(nombre.lower())
+    est.cui = cui
+    estudiantes[cui] = est
+    return est
+
+def crear_curso(nombre, instructor_cui):
+    nombre = nombre.lower()
+    if nombre in cursos:
+        raise ValueError("Curso ya existe.")
+    if instructor_cui not in instructores:
+        raise ValueError("Instructor no encontrado.")
+    cursos.append(nombre)
+    curso_instructor[nombre] = instructor_cui
+    instr = instructores[instructor_cui]
+    instr.asignar_curso(nombre)
+    evaluaciones[nombre] = []
+    return nombre
+
+def crear_evaluacion(curso_nombre, nombre_evaluacion):
+    curso_nombre = curso_nombre.lower()
+    if curso_nombre not in cursos:
+        raise ValueError("Curso no encontrado.")
+    if nombre_evaluacion in evaluaciones[curso_nombre]:
+        raise ValueError("Evaluación ya existe para este curso.")
+    evaluaciones[curso_nombre].append(nombre_evaluacion)
+    for cui, cursos_dict in calificaciones.items():
+        if curso_nombre in cursos_dict:
+            cursos_dict[curso_nombre][nombre_evaluacion] = None
+    return nombre_evaluacion
+
+def registrar_calificacion(cui_est, curso_nombre, nombre_evaluacion, puntuacion):
+    curso_nombre = curso_nombre.lower()
+    if cui_est not in estudiantes:
+        raise ValueError("Estudiante no encontrado.")
+    if curso_nombre not in cursos:
+        raise ValueError("Curso no encontrado.")
+    if nombre_evaluacion not in evaluaciones[curso_nombre]:
+        raise ValueError("Evaluación no encontrada en ese curso.")
+    if cui_est not in calificaciones:
+        calificaciones[cui_est] = {}
+    if curso_nombre not in calificaciones[cui_est]:
+        calificaciones[cui_est][curso_nombre] = {}
+    calificaciones[cui_est][curso_nombre][nombre_evaluacion] = float(puntuacion)
+    return f"Registrada {puntuacion} para {estudiantes[cui_est].nombre} en {curso_nombre} ({nombre_evaluacion})"
+
+def promedio_estudiante_en_curso(cui_est, curso_nombre):
+    curso_nombre = curso_nombre.lower()
+    if cui_est not in calificaciones or curso_nombre not in calificaciones[cui_est]:
+        return None
+    evals = calificaciones[cui_est][curso_nombre]
+    valores = [v for v in evals.values() if v is not None]
+    if not valores:
+        return None
+    return sum(valores) / len(valores)
+
+def promedio_general_estudiante(cui_est):
+    if cui_est not in calificaciones:
+        return None
+    promedios = []
+    for curso_nombre in calificaciones[cui_est]:
+        p = promedio_estudiante_en_curso(cui_est, curso_nombre)
+        if p is not None:
+            promedios.append(p)
+    if not promedios:
+        return None
+    return sum(promedios) / len(promedios)
+
+def guardar_punteos_en_archivo(ruta="calificaciones.txt"):
+    with open(ruta, "w", encoding="utf-8") as f:
+        for cui, cursos_dict in calificaciones.items():
+            nombre = estudiantes.get(cui).nombre if cui in estudiantes else "Desconocido"
+            f.write(f"Estudiante: {nombre} (CUI: {cui})\n")
+            for curso_nombre, evals in cursos_dict.items():
+                f.write(f"  Curso: {curso_nombre}\n")
+                for ev_name, score in evals.items():
+                    f.write(f"    {ev_name}: {score}\n")
+                avg = promedio_estudiante_en_curso(cui, curso_nombre)
+                f.write(f"    Promedio en curso: {avg}\n")
+            pg = promedio_general_estudiante(cui)
+            f.write(f"  Promedio general: {pg}\n")
+            f.write("-" * 40 + "\n")
+    return ruta
 
 if __name__ == "__main__":
     open("usuarios.txt", "w", encoding="utf-8").close()
+    while True:
+        print("- - MENU - -")
+        print("1. Agregar Instructor")
+        print("2. Crear curso")
+        print("3. Agregar estudiante")
+        print("4. Inscribir estudiante a curso")
+        print("5. Crear evaluacion en un curso")
+        print("6. Registrar calificacion")
+        print("7. Mostrar promedios de un estudiante")
+        print("8. Guardar punteos en archivo")
+        print("9. Salir")
+        menu = input("Selecciona una opcion: ").strip()
 
-while True:
-    print("- - MENU - -")
-    print("1. Agregar Instructor")
-    print("2. Crear curso")
-    print("3. Agregar estudiante")
-    print("4. Asignar estudiante a curso")
-    print("5. Crear evalauciones")
-    print("6. Registrar calificaciones")
-    menu = input("Selecciona una opcion: ")
-    match menu:
-        case "2":
-            curso = input("Ingrese el nombre del curso: ")
-            cui_instructor = input("Ingrese el cui del instructor: ").lower()
-            if cui_instructor in instructores:
-                print(f"El instructor {instructores[cui_instructor]} con cui {cui_instructor} está seleccioando")
-                cur = Curso(curso, cui_instructor)
-                cur.agregar_curso()
-                print(cur.curso)
-            else:
-                print("--Instructor no encontrado")
-            print()
+        try:
+            match menu:
+                case "1":
+                    cui = input("Ingrese el cui del instructor: ").strip().lower()
+                    nombre = input("Ingrese el nombre del instructor: ").strip()
+                    crear_instructor(cui, nombre)
+                    print(f"Instructor {nombre} creado con CUI {cui}\n")
 
-        case "3":
-            cui = input("Ingrese su cui: ")
-            nombre = input("Ingrese el nombre: ").lower()
-            cursos = []
-            est = Estudiante(nombre, cursos)
-            estudiantes[cui] = nombre
-            print(estudiantes)
-            print()
+                case "2":
+                    nombre = input("Ingrese el nombre del curso: ").strip()
+                    cui_instructor = input("Ingrese el cui del instructor: ").strip().lower()
+                    crear_curso(nombre, cui_instructor)
+                    print(f"Curso '{nombre}' creado y asignado al instructor {cui_instructor}\n")
 
-        case "4":
-            cui = input("Ingresa el cui del estudiante: ")
-            if cui in estudiantes:
-                print(f"El estudiante es {estudiantes[cui]}")
-                curso = input("Ingresa el nombre del curso a agregar: ").lower()
-                if curso in cursos:
-                    Estudiante.inscribir_curso(est, curso)
-                    print(f"{estudiantes[cui]} fue agregado a {curso}")
-                else:
-                    print("--Curso no encontrado")
-            else:
-                print("--Estudiante no encontrado!")
-            print()
+                case "3":
+                    cui = input("Ingrese su cui: ").strip().lower()
+                    nombre = input("Ingrese el nombre del estudiante: ").strip()
+                    crear_estudiante(cui, nombre)
+                    print(f"Estudiante {nombre} creado con CUI {cui}\n")
 
-        case "1":
-            cui = input("Ingrese su cui: ")
-            nombre = input("Ingrese el nombre: ").lower()
-            cursos = []
-            inst = Instructor(nombre, cursos)
-            instructores[cui] = nombre
-            print(instructores)
-            print()
+                case "4":
+                    cui = input("Ingresa el cui del estudiante: ").strip().lower()
+                    curso = input("Ingresa el nombre del curso a agregar: ").strip().lower()
+                    if cui in estudiantes and curso in cursos:
+                        estudiantes[cui].inscribir_curso(curso)
+                        print(f"{estudiantes[cui].nombre} fue agregado a {curso}\n")
+                    else:
+                        print("--Estudiante o curso no encontrado\n")
 
-        case "5":
-            curso = input("Escriba el nombre del curso: ")
-            if curso in cursos:
-                input("Ingrese el nombre del examen o actividad: ")
-            else:
-                print("--Curso no encontrado")
-            print()
+                case "5":
+                    curso = input("Escriba el nombre del curso: ").strip().lower()
+                    if curso in cursos:
+                        nombre_ev = input("Ingrese el nombre del examen o actividad: ").strip()
+                        crear_evaluacion(curso, nombre_ev)
+                        print(f"Evaluación '{nombre_ev}' creada para {curso}\n")
+                    else:
+                        print("--Curso no encontrado\n")
 
-        case "6":
-            cui = input("Ingrese el cui del estudiante: ")
-            if cui in estudiantes:
-                print(f"El estudiante es {estudiantes[cui]}")
-                curscal = input("Ingrese el nombre del curso al que se le asignará calificacion: ")
-                print(cursos)
-                if curscal in cursos:
-                    cal = input(f"Ingresa la calificacion de {estudiantes[cui]} en {curscal}: ")
-                else:
-                    print("--Curso no encontrado")
-            else:
-                print("--Estudiante no encontrado")
-            print()
+                case "6":
+                    cui = input("Ingrese el cui del estudiante: ").strip().lower()
+                    curso = input("Ingrese el nombre del curso: ").strip().lower()
+                    evaluacion = input("Ingrese el nombre de la evaluación: ").strip()
+                    puntuacion = input("Ingrese la puntuación (número): ").strip()
+                    registrar_calificacion(cui, curso, evaluacion, puntuacion)
+                    print("Calificación registrada.\n")
 
-        case _:
-            print("--Opcion no válida")
-            print()
+                case "7":
+                    cui = input("Ingrese el cui del estudiante: ").strip().lower()
+                    if cui in estudiantes:
+                        print("Promedios por curso:")
+                        if cui in calificaciones:
+                            for curso_nombre in calificaciones[cui]:
+                                p = promedio_estudiante_en_curso(cui, curso_nombre)
+                                print(f"  {curso_nombre}: {p}")
+                        else:
+                            print("  Sin calificaciones.")
+                        pg = promedio_general_estudiante(cui)
+                        print(f"Promedio general: {pg}\n")
+                    else:
+                        print("--Estudiante no encontrado\n")
 
+                case "8":
+                    ruta = guardar_punteos_en_archivo()
+                    print(f"Punteos guardados en {ruta}\n")
+
+                case "9":
+                    print("Saliendo...")
+                    break
+
+                case _:
+                    print("--Opcion no válida\n")
+        except Exception as e:
+            print("Error:", e, "\n")

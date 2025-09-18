@@ -1,0 +1,6 @@
+Estudiante: angelo garcía (CUI: 456)
+  Curso: programacion avanzada
+    Examen 1: 77.0
+    Promedio en curso: 77.0
+  Promedio general: 77.0
+----------------------------------------
