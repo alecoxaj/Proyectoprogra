@@ -211,7 +211,7 @@ if __name__ == "__main__":
                 case "6":
                     cui = input("Ingrese el cui del estudiante: ").strip().lower()
                     curso = input("Ingrese el nombre del curso: ").strip().lower()
-                    evaluacion = input("Ingrese el nombre de la evaluación: ").strip()
+                    evaluacion = input("Ingrese el nombre de la evaluación: ").strip().lower()
                     puntuacion = input("Ingrese la puntuación (número): ").strip()
                     registrar_calificacion(cui, curso, **{evaluacion: puntuacion})
                     print("Calificación registrada.\n")
