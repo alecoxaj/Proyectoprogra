@@ -1,3 +1,15 @@
+estudiantes = {}
+instructores = {}
+cursos = []
+
+class Curso:
+    def __init__(self, curso, instructor):
+        self.curso = curso
+        self.instructor = instructor
+
+    def agregar_curso(self):
+        cursos.append(self.curso)
+
 class Usuario:
     def __init__(self, nombre):
         self.nombre = nombre
@@ -6,10 +18,7 @@ class Estudiante(Usuario):
     def __init__(self, nombre, cursos):
         super().__init__(nombre)
         self.cursos = cursos
-        self.estudiantes = {}
 
-    def mostrar_info(self):
-        return f"Nombre: {self.nombre}, Cursos Inscritos: {self.cursos}\n"
 
     def inscribir_curso(self, curso):
         if curso in self.cursos:
@@ -17,45 +26,11 @@ class Estudiante(Usuario):
         self.cursos.append(curso)
         return f"Estudiante {self.nombre} inscrito en {curso}"
 
-    def CargarEstudiantes(self):
-        try:
-            with open("usuarios.txt", "r", encoding="utf-8") as archivo:
-                for linea in archivo:
-                    linea = linea.strip()
-                    if linea:
-                        cui, nombre, rol = linea.split(":")
-                        if rol == "Estudiante":
-                            self.estudiantes[cui] = {
-                                "cui": cui,
-                                "nombre": nombre,
-                                "rol": rol
-                            }
-            print("Se importaron estudiantes de usuarios.txt")
-        except FileNotFoundError:
-            print("No existe este archivo")
-
-    def GuardarEstudiantes(self):
-        with open("usuarios.txt", "a", encoding="utf-8") as archivo:
-            for cui, datos in self.estudiantes.items():
-                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}\n")
-
-    def AgregarEstudiantes(self, cui, nombre):
-        self.estudiantes[cui] = {
-            "cui": cui,
-            "nombre": nombre,
-            "rol": "Estudiante",
-        }
-        self.GuardarEstudiantes()
-        print(f"Estudiante con CUI {cui} agregado y guardado correctamente.")
 
 class Instructor(Usuario):
     def __init__(self, nombre, cursos):
         super().__init__(nombre)
         self.cursos = cursos
-        self.instructores = {}
-
-    def mostrar_info(self):
-        return f"Instructor: {self.nombre}, Cursos asignados: {self.cursos}\n"
 
     def asignar_curso(self, curso):
         if curso in self.cursos:
@@ -63,78 +38,80 @@ class Instructor(Usuario):
         self.cursos.append(curso)
         return f"{self.nombre} ahora imparte {curso}"
 
-    def CargarInstructores(self):
-        try:
-            with open("usuarios.txt", "r", encoding="utf-8") as archivo:
-                for linea in archivo:
-                    linea = linea.strip()
-                    if linea:
-                        cui, nombre, rol = linea.split(":")
-                        if rol == "Instructor":
-                            self.instructores[cui] = {
-                                "cui": cui,
-                                "nombre": nombre,
-                                "rol": rol
-                            }
-            print("Se importaron instructores de usuarios.txt")
-        except FileNotFoundError:
-            print("No existe este archivo")
-
-    def GuardarInstructores(self):
-        with open("usuarios.txt", "a", encoding="utf-8") as archivo:
-            for cui, datos in self.instructores.items():
-                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}\n")
-
-    def AgregarInstructores(self, cui, nombre):
-        self.instructores[cui] = {
-            "cui": cui,
-            "nombre": nombre,
-            "rol": "Instructor",
-        }
-        self.GuardarInstructores()
-        print(f"Instructor con CUI {cui} agregado y guardado correctamente.")
-
-def crear_curso(nombre_curso, *estudiantes, **kwargs):
-    curso = {"nombre": nombre_curso, "estudiantes": [], "instructor": kwargs.get("instructor")}
-    for est in estudiantes:
-        curso["estudiantes"].append(est.nombre)
-    return curso
-
-def registrar_usuario():
-    print("=== Registro de Usuario ===")
-    cui = input("Ingrese CUI: ")
-    nombre = input("Ingrese nombre: ")
-    rol = input("Ingrese rol (Estudiante/Instructor): ")
-
-    if rol.lower() == "estudiante":
-        est = Estudiante(nombre, [])
-        est.AgregarEstudiantes(cui, nombre)
-    elif rol.lower() == "instructor":
-        ins = Instructor(nombre, [])
-        ins.AgregarInstructores(cui, nombre)
-    else:
-        print("Rol no válido. Intente de nuevo.")
-
 if __name__ == "__main__":
     open("usuarios.txt", "w", encoding="utf-8").close()
 
-    # Menú de registro
-    while True:
-        opcion = input("\n¿Desea registrar un nuevo usuario? (s/n): ")
-        if opcion.lower() == "s":
-            registrar_usuario()
-        else:
-            break
+while True:
+    print("1. Agregar Instructor")
+    print("2. Crear curso")
+    print("3. Agregar estudiante")
+    print("4. Asignar estudiante a curso")
+    print("5. Crear evalauciones")
+    print("6. Registrar calificaciones")
+    menu = input("Selecciona una opcion: ")
+    match menu:
+        case "2":
+            curso = input("Ingrese el nombre del curso: ")
+            cui_instructor = input("Ingrese el cui del instructor: ").lower()
+            if cui_instructor in instructores:
+                print(f"El instructor {instructores[cui_instructor]} con cui {cui_instructor} está seleccioando")
+                cur = Curso(curso, cui_instructor)
+                cur.agregar_curso()
+                print(cur.curso)
+            else:
+                print("Instructor no encontrado")
+            print()
 
-    print("\n--- Contenido del archivo usuarios.txt ---")
-    with open("usuarios.txt", "r", encoding="utf-8") as f:
-        print(f.read())
+        case "3":
+            cui = input("Ingrese su cui: ")
+            nombre = input("Ingrese el nombre: ").lower()
+            cursos = []
+            est = Estudiante(nombre, cursos)
+            estudiantes[cui] = nombre
+            print(estudiantes)
+            print()
 
-    e_temp = Estudiante("temp", [])
-    e_temp.CargarEstudiantes()
-    print("Diccionario estudiantes:", e_temp.estudiantes)
+        case "4":
+            cui = input("Ingresa el cui del estudiante: ")
+            if cui in estudiantes:
+                print(f"El estudiante es {estudiantes[cui]}")
+                curso = input("Ingresa el nombre del curso a agregar: ").lower()
+                if curso in cursos:
+                    Estudiante.inscribir_curso(est, curso)
+                    print(f"{estudiantes[cui]} fue agregado a {curso}")
+                else:
+                    print("Curso no encontrado")
+            else:
+                print("Estudiante no encontrado!")
+            print()
 
-    i_temp = Instructor("temp", [])
-    i_temp.CargarInstructores()
-    print("Diccionario instructores:", i_temp.instructores)
+        case "1":
+            cui = input("Ingrese su cui: ")
+            nombre = input("Ingrese el nombre: ").lower()
+            cursos = []
+            inst = Instructor(nombre, cursos)
+            instructores[cui] = nombre
+            print(instructores)
+            print()
 
+        case "5":
+            curso = input("Escriba el nombre del curso: ")
+            if curso in cursos:
+                input("Ingrese el nombre del examen o actividad: ")
+            else:
+                print("Curso no encontrado")
+            print()
+
+        case "6":
+            cui = input("Ingrese el cui del estudiante: ")
+            if cui in estudiantes:
+                print(f"El estudiante es {estudiantes[cui]}")
+                curscal = input("Ingrese el nombre del curso al que se le asignará calificacion: ")
+                print(cursos)
+                if curscal in cursos:
+                    cal = input(f"Ingresa la calificacion de {estudiantes[cui]} en {curscal}: ")
+                else:
+                    print("Curso no encontrado")
+            else:
+                print("Estudiante no encontrado")
+            print()
