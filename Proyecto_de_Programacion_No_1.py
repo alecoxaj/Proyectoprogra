@@ -99,3 +99,41 @@ def crear_curso(nombre_curso, *estudiantes, **kwargs):
     for est in estudiantes:
         curso["estudiantes"].append(est.nombre)
     return curso
+
+if __name__ == "__main__":
+    open("usuarios.txt", "w", encoding="utf-8").close()
+
+    e1 = Estudiante("Alejandro", [])
+    e2 = Estudiante("José", ["Cálculo"])
+    i1 = Instructor("Ing. Jorge Tello", [])
+
+    e1.AgregarEstudiantes("123", "Alejandro")
+    e2.AgregarEstudiantes("456", "José")
+    i1.AgregarInstructores("789", "Ing. Jorge Tello")
+
+    print("\n--- Contenido del archivo usuarios.txt ---")
+    with open("usuarios.txt", "r", encoding="utf-8") as f:
+        print(f.read())
+
+    e_temp = Estudiante("temp", [])
+    e_temp.CargarEstudiantes()
+    print("Diccionario estudiantes:", e_temp.estudiantes)
+
+    i_temp = Instructor("temp", [])
+    i_temp.CargarInstructores()
+    print("Diccionario instructores:", i_temp.instructores)
+
+    try:
+        print(e1.inscribir_curso("Programación Avanzada"))
+        print(e1.inscribir_curso("Programación Avanzada"))
+    except ValueError as e:
+        print(f"Error: {e}")
+
+    try:
+        print(i1.asignar_curso("Bases de Datos"))
+        print(i1.asignar_curso("Bases de Datos"))
+    except ValueError as e:
+        print(f"Error: {e}")
+
+    curso1 = crear_curso("POO", e1, e2, instructor=i1.nombre)
+    print("Curso creado:", curso1)
