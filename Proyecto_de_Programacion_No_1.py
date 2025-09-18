@@ -84,14 +84,16 @@ def crear_evaluacion(curso_nombre, *args):
         raise ValueError("Curso no encontrado.")
     nuevas = []
     for nombre_evaluacion in args:
-        if nombre_evaluacion in evaluaciones[curso_nombre]:
-            raise ValueError(f"La Evaluación '{nombre_evaluacion}' ya existe en este curso.'")
-        evaluaciones[curso_nombre].append(nombre_evaluacion)
+        ev = nombre_evaluacion.strip().lower()
+        if ev in evaluaciones[curso_nombre]:
+            raise ValueError(f"La Evaluación '{ev}' ya existe en este curso.")
+        evaluaciones[curso_nombre].append(ev)
+        # agregar la evaluación a las calificaciones existentes
         for cui, cursos_dict in calificaciones.items():
             if curso_nombre in cursos_dict:
-                cursos_dict[curso_nombre][nombre_evaluacion] = None
-            nuevas.append(nombre_evaluacion)
-        return nuevas
+                cursos_dict[curso_nombre][ev] = None
+        nuevas.append(ev)
+    return nuevas
 
 def registrar_calificacion(cui_est, curso_nombre, **kwargs):
     curso_nombre = curso_nombre.lower()
