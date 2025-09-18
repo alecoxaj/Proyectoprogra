@@ -25,7 +25,6 @@ class Estudiante(Usuario):
     def descripcion(self):
         return f"Estudiante {self.nombre} (extras: {self.extra})"
 
-    def
     def inscribir_curso(self, curso_nombre):
         if self.cui not in calificaciones:
             calificaciones[self.cui] = {}
@@ -50,18 +49,18 @@ class Instructor(Usuario):
         return f"{self.nombre} ahora imparte {curso_nombre}"
 
 
-def crear_instructor(cui, nombre):
+def crear_instructor(cui, nombre, **kwargs):
     if cui in instructores:
         raise ValueError("CUI de instructor ya existe.")
-    inst = Instructor(nombre.lower())
+    inst = Instructor(nombre.lower(), **kwargs)
     inst.cui = cui
     instructores[cui] = inst
     return inst
 
-def crear_estudiante(cui, nombre):
+def crear_estudiante(cui, nombre, **kwargs):
     if cui in estudiantes:
         raise ValueError("CUI de estudiante ya existe.")
-    est = Estudiante(nombre.lower())
+    est = Estudiante(nombre.lower(), **kwargs)
     est.cui = cui
     estudiantes[cui] = est
     return est
@@ -79,32 +78,38 @@ def crear_curso(nombre, instructor_cui):
     evaluaciones[nombre] = []
     return nombre
 
-def crear_evaluacion(curso_nombre, nombre_evaluacion):
+def crear_evaluacion(curso_nombre, *args):
     curso_nombre = curso_nombre.lower()
     if curso_nombre not in cursos:
         raise ValueError("Curso no encontrado.")
-    if nombre_evaluacion in evaluaciones[curso_nombre]:
-        raise ValueError("Evaluación ya existe para este curso.")
-    evaluaciones[curso_nombre].append(nombre_evaluacion)
-    for cui, cursos_dict in calificaciones.items():
-        if curso_nombre in cursos_dict:
-            cursos_dict[curso_nombre][nombre_evaluacion] = None
-    return nombre_evaluacion
+    nuevas = []
+    for nombre_evaluacion in args:
+        if nombre_evaluacion in evaluaciones[curso_nombre]:
+            raise ValueError(f"La Evaluación '{nombre_evaluacion}' ya existe en este curso.'")
+        evaluaciones[curso_nombre].append(nombre_evaluacion)
+        for cui, cursos_dict in calificaciones.items():
+            if curso_nombre in cursos_dict:
+                cursos_dict[curso_nombre][nombre_evaluacion] = None
+            nuevas.append(nombre_evaluacion)
+        return nuevas
 
-def registrar_calificacion(cui_est, curso_nombre, nombre_evaluacion, puntuacion):
+def registrar_calificacion(cui_est, curso_nombre, **kwargs):
     curso_nombre = curso_nombre.lower()
     if cui_est not in estudiantes:
         raise ValueError("Estudiante no encontrado.")
     if curso_nombre not in cursos:
         raise ValueError("Curso no encontrado.")
-    if nombre_evaluacion not in evaluaciones[curso_nombre]:
-        raise ValueError("Evaluación no encontrada en ese curso.")
+
     if cui_est not in calificaciones:
         calificaciones[cui_est] = {}
     if curso_nombre not in calificaciones[cui_est]:
         calificaciones[cui_est][curso_nombre] = {}
-    calificaciones[cui_est][curso_nombre][nombre_evaluacion] = float(puntuacion)
-    return f"Registrada {puntuacion} para {estudiantes[cui_est].nombre} en {curso_nombre} ({nombre_evaluacion})"
+
+    for nombre_evaluacion, puntuacion in kwargs.items():
+        if nombre_evaluacion not in evaluaciones[curso_nombre]:
+            raise ValueError("Evaluación no encontrada en ese curso.")
+        calificaciones[cui_est][curso_nombre][nombre_evaluacion] = float(puntuacion)
+    return f"Registradas calificaciones para {estudiantes[cui_est].nombre} en {curso_nombre}: {kwargs}"
 
 def promedio_estudiante_en_curso(cui_est, curso_nombre):
     curso_nombre = curso_nombre.lower()
