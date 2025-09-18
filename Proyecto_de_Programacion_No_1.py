@@ -207,7 +207,7 @@ if __name__ == "__main__":
                     curso = input("Ingrese el nombre del curso: ").strip().lower()
                     evaluacion = input("Ingrese el nombre de la evaluación: ").strip()
                     puntuacion = input("Ingrese la puntuación (número): ").strip()
-                    registrar_calificacion(cui, curso, evaluacion, puntuacion)
+                    registrar_calificacion(cui, curso, **{evaluacion: puntuacion})
                     print("Calificación registrada.\n")
 
                 case "7":
