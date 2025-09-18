@@ -36,8 +36,8 @@ class Estudiante(Usuario):
             raise ValueError(f"El estudiante {self.nombre} ya está inscrito en {curso_nombre}.")
 
 class Instructor(Usuario):
-    def __init__(self, nombre):
-        super().__init__(nombre)
+    def __init__(self, nombre, *args, **kwargs):
+        super().__init__(nombre, *args, **kwargs)
         self.cursos = []
 
     def descripcion(self):
