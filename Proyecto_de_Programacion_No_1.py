@@ -101,16 +101,20 @@ def registrar_calificacion(cui_est, curso_nombre, **kwargs):
         raise ValueError("Estudiante no encontrado.")
     if curso_nombre not in cursos:
         raise ValueError("Curso no encontrado.")
-
-    if cui_est not in calificaciones:
-        calificaciones[cui_est] = {}
-    if curso_nombre not in calificaciones[cui_est]:
-        calificaciones[cui_est][curso_nombre] = {}
+    calificaciones.setdefault(cui_est, {})
+    calificaciones[cui_est].setdefault(curso_nombre, {})
 
     for nombre_evaluacion, puntuacion in kwargs.items():
-        if nombre_evaluacion not in evaluaciones[curso_nombre]:
-            raise ValueError("Evaluación no encontrada en ese curso.")
-        calificaciones[cui_est][curso_nombre][nombre_evaluacion] = float(puntuacion)
+        ev = nombre_evaluacion.strip().lower()
+        if ev not in evaluaciones[curso_nombre]:
+            raise ValueError(f"Evaluación '{ev}' no encontrada en ese curso.")
+        try:
+            score = float(puntuacion)
+        except ValueError:
+            raise ValueError("La puntuación debe ser un número.")
+        if score < 0 or score > 100:
+            raise ValueError("La puntuación debe estar entre 0 y 100.")
+        calificaciones[cui_est][curso_nombre][ev] = score
     return f"Registradas calificaciones para {estudiantes[cui_est].nombre} en {curso_nombre}: {kwargs}"
 
 def promedio_estudiante_en_curso(cui_est, curso_nombre):
