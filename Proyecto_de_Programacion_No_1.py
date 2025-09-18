@@ -19,13 +19,11 @@ class Estudiante(Usuario):
         super().__init__(nombre)
         self.cursos = cursos
 
-
     def inscribir_curso(self, curso):
         if curso in self.cursos:
             raise ValueError(f"El estudiante {self.nombre} ya está inscrito en {curso}.")
         self.cursos.append(curso)
         return f"Estudiante {self.nombre} inscrito en {curso}"
-
 
 class Instructor(Usuario):
     def __init__(self, nombre, cursos):
@@ -42,6 +40,7 @@ if __name__ == "__main__":
     open("usuarios.txt", "w", encoding="utf-8").close()
 
 while True:
+    print("- - MENU - -")
     print("1. Agregar Instructor")
     print("2. Crear curso")
     print("3. Agregar estudiante")
@@ -59,7 +58,7 @@ while True:
                 cur.agregar_curso()
                 print(cur.curso)
             else:
-                print("Instructor no encontrado")
+                print("--Instructor no encontrado")
             print()
 
         case "3":
@@ -80,9 +79,9 @@ while True:
                     Estudiante.inscribir_curso(est, curso)
                     print(f"{estudiantes[cui]} fue agregado a {curso}")
                 else:
-                    print("Curso no encontrado")
+                    print("--Curso no encontrado")
             else:
-                print("Estudiante no encontrado!")
+                print("--Estudiante no encontrado!")
             print()
 
         case "1":
@@ -99,7 +98,7 @@ while True:
             if curso in cursos:
                 input("Ingrese el nombre del examen o actividad: ")
             else:
-                print("Curso no encontrado")
+                print("--Curso no encontrado")
             print()
 
         case "6":
@@ -111,7 +110,12 @@ while True:
                 if curscal in cursos:
                     cal = input(f"Ingresa la calificacion de {estudiantes[cui]} en {curscal}: ")
                 else:
-                    print("Curso no encontrado")
+                    print("--Curso no encontrado")
             else:
-                print("Estudiante no encontrado")
+                print("--Estudiante no encontrado")
             print()
+
+        case _:
+            print("--Opcion no válida")
+            print()
+
