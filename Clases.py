@@ -1,76 +1,74 @@
+class Curso:
+    def __init__(self, curso):
+        self.curso = curso
+        self.cursos = []
+        self.estudiantes = []
+        self.instructores = []
+
+    def agregar_curso(self):
+        self.cursos.append(self.curso)
+
+    def agregar_estudiante(self, estudiante):
+        self.estudiantes.append(estudiante)
+
+    def agregar_instructor(self, instructor):
+        if self.instructores:
+            print("Ya hay un instrucotr asignado a este curso!")
+        else:
+            self.instructores.append(instructor)
+
 class Usuario:
-    def __init__(self, nombre):
+    def __init__(self, cui, nombre):
         self.nombre = nombre
+        self.cui = cui
         super().__init__()
 
 class Estudiante(Usuario):
-    def __init__(self, nombre, cursos):
-        super().__init__(nombre)
-        self.cursos = cursos
-        self.estudiantes = {}
-
-    def CargarEstudiantes(self):
-        try:
-            with open("usuarios.txt", "r", encoding="utf-8") as archivo:
-                for liena in archivo:
-                    linea = linea.strip()
-                    if linea:
-                        cui, nombre, rol = linea.split(":")
-                        self.estudiantes[cui] = {
-                            'cui': cui,
-                            'nombre': nombre,
-                            'rol': rol
-                        }
-            print("Se importaron usuarios de usuarios.txt")
-        except FileNotFoundError:
-            print("No existe este archivo")#cambiar por tkinter
-
-    def GuardarEstudiantes(self):
-        with open("usuarios.txt", "w", encoding="utf=8") as archivo:
-            for cui, datos in self.estudiantes.items():
-                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}")
-
-    def AgregarEstudiantes(self, cui, nombre, rol):
-        self.estudiantes[cui] = {
-            'cui': cui,
-            'nombre': nombre,
-            'rol': rol,
-        }
-        self.GuardarEstudiantes()
-        print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
+    def __init__(self, cui, nombre, curso):
+        super().__init__(cui, nombre)
+        self.curso = curso
+        self.estudiantes = []
 
 class Instructor(Usuario):
-    def __init__(self, nombre, cursos):
-        super().__init__(nombre)
-        self.cursos = cursos
-        self.instructores = {}
+    def __init__(self, cui, nombre, curso):
+        super().__init__(cui, nombre)
+        self.curso = curso
+        self.instructores = []
 
-    def CargarInstructores(self):
-        try:
-            with open("usuarios.txt", "r", encoding="utf-8") as archivo:
-                for liena in archivo:
-                    linea = linea.strip()
-                    if linea:
-                        cui, nombre, rol = linea.split(":")
-                        self.instructores[cui] = {
-                            'cui': cui,
-                            'nombre': nombre,
-                            'rol': rol
-                        }
-            print("Se importaron usuarios de usuarios.txt")
-        except FileNotFoundError:
-            print("No existe este archivo")#cambiar por tkinter
+x = Curso
 
-    def GuardarInstructores(self):
-        with open("usuarios.txt", "w", encoding="utf=8") as archivo:
-            for cui, datos in self.instructores.items():
-                archivo.write(f"{cui}:{datos['nombre']}:{datos['rol']}")
+while True:
+    print("1. Crear curso")
+    print("2. Agregar estudiante")
+    print("3. Agregar Instructor")
+    menu = input("Selecciona una opcion: ")
 
-    def AgregarInstructores(self, cui, nombre, rol):
-        self.instructores[cui] = {
-            'cui': cui,
-            'nombre': nombre,
-            'rol': rol,
-        }
-        self.GuardarInstructores()
-        print(f"Cliente con CUI {cui} agregado y guardado correctamente.")
+    match menu:
+        case "1":
+            nombreCurso = input("Ingresa el nombre del curso: ").lower()
+            cur = Curso(nombreCurso)
+            cur.agregar_curso()
+
+        case "2":
+            cui = input("Ingresa el cui: ")
+            nombre = input("Ingresa el nombre: ")
+            curso = input("Ingresa el nombre del curso al que se asignará: ").lower()
+
+            if curso == cur.curso:
+                est = Estudiante(cui, nombre, curso)
+                cur.agregar_estudiante(est)
+            else:
+                print("Curso no encontrado")
+
+        case "3":
+            cui = input("Ingresa el cui: ")
+            nombre = input("Ingresa el nombre: ")
+            curso = input("Ingresa el nombre del curso al que se asignará: ").lower()
+
+            if curso == cur.curso:
+                inst = Instructor(cui, nombre, curso)
+                cur.agregar_estudiante(inst)
+            else:
+                print("Curso no encontrado")
+
+
