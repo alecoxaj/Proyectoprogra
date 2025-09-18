@@ -1,3 +1,2 @@
-123:Alejandro:Estudiante
-456:José:Estudiante
-789:Ing. Jorge Tello:Instructor
+123:Juan:Estudiante
+745:Pedro:Instructor
