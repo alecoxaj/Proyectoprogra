@@ -155,6 +155,21 @@ def guardar_punteos_en_archivo(ruta="calificaciones.txt"):
             f.write("-" * 40 + "\n")
     return ruta
 
+def listar_cursos():
+    if not cursos:
+        return []
+    return list(cursos)
+
+def estudiantes_en_curso(curso_nombre):
+    curso_nombre = curso_nombre.lower()
+    if curso_nombre not in cursos:
+        raise ValueError("Curso no encontrado.")
+    inscritos = []
+    for cui, cursos_dict in calificaciones.items():
+        if curso_nombre in cursos_dict:
+            inscritos.append(estudiantes[cui].nombre)
+    return inscritos
+
 if __name__ == "__main__":
     open("usuarios.txt", "w", encoding="utf-8").close()
     while True:
