@@ -1,6 +1,6 @@
-Estudiante: alex (CUI: 45678)
-  Curso: astronomía
-    Examen 1: 89.0
-    Promedio en curso: 89.0
-  Promedio general: 89.0
+Estudiante: marvin (CUI: 45678)
+  Curso: ofimática
+    actividad 1: 90.0
+    Promedio en curso: 90.0
+  Promedio general: 90.0
 ----------------------------------------

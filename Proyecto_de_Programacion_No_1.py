@@ -117,6 +117,9 @@ def registrar_calificacion(cui_est, curso_nombre, **kwargs):
         calificaciones[cui_est][curso_nombre][ev] = score
     return f"Registradas calificaciones para {estudiantes[cui_est].nombre} en {curso_nombre}: {kwargs}"
 
+    guardar_punteos_en_archivo()
+    return f"Registradas calificaciones para {estudiantes[cui_est].nombre} en {curso_nombre}: {kwargs}"
+
 def promedio_estudiante_en_curso(cui_est, curso_nombre):
     curso_nombre = curso_nombre.lower()
     if cui_est not in calificaciones or curso_nombre not in calificaciones[cui_est]:
