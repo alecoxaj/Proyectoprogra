@@ -21,6 +21,7 @@ class Usuario:
 class Estudiante(Usuario):
     def __init__(self, nombre, *args, **kwargs):
         super().__init__(nombre, *args, **kwargs)
+        self.cui = None
 
     def descripcion(self):
         return f"Estudiante {self.nombre} (extras: {self.extra})"
@@ -115,7 +116,6 @@ def registrar_calificacion(cui_est, curso_nombre, **kwargs):
         if score < 0 or score > 100:
             raise ValueError("La puntuación debe estar entre 0 y 100.")
         calificaciones[cui_est][curso_nombre][ev] = score
-    return f"Registradas calificaciones para {estudiantes[cui_est].nombre} en {curso_nombre}: {kwargs}"
 
     guardar_punteos_en_archivo()
     return f"Registradas calificaciones para {estudiantes[cui_est].nombre} en {curso_nombre}: {kwargs}"
