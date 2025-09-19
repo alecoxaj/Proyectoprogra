@@ -10,3 +10,15 @@ Estudiante: marvin (CUI: 1234)
     Promedio en curso: 100.0
   Promedio general: 100.0
 ----------------------------------------
+Estudiante: marvin (CUI: 777)
+  Curso: programacion
+    examen 1: 99.0
+    Promedio en curso: 99.0
+  Promedio general: 99.0
+----------------------------------------
+Estudiante: marvin (CUI: 777)
+  Curso: programacion
+    examen 1: 99.0
+    Promedio en curso: 99.0
+  Promedio general: 99.0
+----------------------------------------
