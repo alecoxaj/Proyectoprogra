@@ -183,6 +183,8 @@ if __name__ == "__main__":
         print("7. Mostrar promedios de un estudiante")
         print("8. Guardar punteos en archivo")
         print("9. Salir")
+        print("10. Listar cursos")
+        print("11. Listar estudiantes de un curso")
         menu = input("Selecciona una opcion: ").strip()
 
         try:
@@ -253,6 +255,28 @@ if __name__ == "__main__":
                 case "9":
                     print("Saliendo...")
                     break
+
+                case "10":
+                    cursos_disponibles = listar_cursos()
+                    if cursos_disponibles:
+                        print("Cursos registrados:")
+                        for c in cursos_disponibles:
+                            print(f" - {c}")
+                    else:
+                        print("No hay cursos registrados.\n")
+
+                case "11":
+                    curso = input("Ingrese el nombre del curso: ").strip().lower()
+                    try:
+                        alumnos = estudiantes_en_curso(curso)
+                        if alumnos:
+                            print(f"Estudiantes en {curso}:")
+                            for est in alumnos:
+                                print(f" - {est}")
+                        else:
+                            print(f"No hay estudiantes inscritos en {curso}.")
+                    except Exception as e:
+                        print("Error:", e)
 
                 case _:
                     print("--Opcion no válida\n")
