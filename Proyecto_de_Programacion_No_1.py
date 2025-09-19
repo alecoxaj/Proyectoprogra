@@ -143,7 +143,7 @@ def promedio_general_estudiante(cui_est):
     return sum(promedios) / len(promedios)
 
 def guardar_punteos_en_archivo(ruta="calificaciones.txt"):
-    with open(ruta, "w", encoding="utf-8") as f:
+    with open(ruta, "a", encoding="utf-8") as f:
         for cui, cursos_dict in calificaciones.items():
             nombre = estudiantes.get(cui).nombre if cui in estudiantes else "Desconocido"
             f.write(f"Estudiante: {nombre} (CUI: {cui})\n")
